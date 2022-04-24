@@ -1,15 +1,16 @@
-use std::ops::{AddAssign, DivAssign, Index, IndexMut, MulAssign, Neg};
+use std::io::Write;
+use std::ops::{Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, MulAssign, Neg, Sub};
 
-pub struct Vector {
+pub struct Vector3 {
     e: [f64; 3],
 }
 
-type Color = Vector;
-type Point3 = Vector;
+type Color = Vector3;
+type Point3 = Vector3;
 
-impl Vector {
-    pub fn new(x: f64, y: f64, z: f64) -> Vector {
-        Vector{ e: [x, y, z] }
+impl Vector3 {
+    pub fn new(x: f64, y: f64, z: f64) -> Vector3 {
+        Vector3 { e: [x, y, z] }
     }
 
     pub fn x(self) -> f64 {
@@ -37,15 +38,48 @@ impl Vector {
 
         return ls;
     }
-}
 
-impl Default for Vector {
-    fn default() -> Self {
-        Vector{e:[0., 0., 0.]}
+    pub fn dot(lhs: Vector3, rhs: Vector3) -> f64 {
+        lhs.e[0] * rhs.e[0] + lhs.e[1] * rhs.e[1] + lhs.e[2] * rhs.e[2]
+    }
+
+    pub fn cross(lhs: Vector3, rhs: Vector3) -> Vector3 {
+        Vector3 {
+            e: [
+                lhs.e[1] * rhs.e[2] - lhs.e[2] * rhs.e[1],
+                lhs.e[2] * rhs.e[0] - lhs.e[0] * rhs.e[2],
+                lhs.e[0] * rhs.e[1] - lhs.e[1] * rhs.e[0],
+            ],
+        }
+    }
+
+    pub fn unit_vector(v: Vector3) -> Vector3{
+        let len = v.length();
+        v / len
     }
 }
 
-impl AddAssign for Vector {
+impl Default for Vector3 {
+    fn default() -> Self {
+        Vector3 { e: [0., 0., 0.] }
+    }
+}
+
+impl Add for Vector3 {
+    type Output = Vector3;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        let mut output = Vector3::default();
+
+        output.e[0] = self.e[0] + rhs.e[0];
+        output.e[0] = self.e[1] + rhs.e[1];
+        output.e[0] = self.e[2] + rhs.e[2];
+
+        output
+    }
+}
+
+impl AddAssign for Vector3 {
     fn add_assign(&mut self, rhs: Self) {
         self.e[0] += rhs.e[0];
         self.e[1] += rhs.e[1];
@@ -53,7 +87,7 @@ impl AddAssign for Vector {
     }
 }
 
-impl AddAssign<f64> for Vector {
+impl AddAssign<f64> for Vector3 {
     fn add_assign(&mut self, rhs: f64) {
         for el in &mut self.e {
             *el += rhs
@@ -61,7 +95,57 @@ impl AddAssign<f64> for Vector {
     }
 }
 
-impl MulAssign<f64> for Vector {
+impl Sub for Vector3 {
+    type Output = Vector3;
+
+    fn sub(self, rhs: Vector3) -> Self::Output {
+        let mut output = Vector3::default();
+
+        output.e[0] = self.e[0] - rhs.e[0];
+        output.e[0] = self.e[1] - rhs.e[1];
+        output.e[0] = self.e[2] - rhs.e[2];
+
+        output
+    }
+}
+
+impl Mul for Vector3 {
+    type Output = Vector3;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        let mut output = Vector3::default();
+
+        output.e[0] = self.e[0] * rhs.e[0];
+        output.e[0] = self.e[1] * rhs.e[1];
+        output.e[0] = self.e[2] * rhs.e[2];
+
+        output
+    }
+}
+
+impl Mul<f64> for Vector3 {
+    type Output = Vector3;
+
+    fn mul(self, rhs: f64) -> Self::Output {
+        let mut output = Vector3::default();
+
+        output.e[0] = self.e[0] * rhs;
+        output.e[0] = self.e[1] * rhs;
+        output.e[0] = self.e[2] * rhs;
+
+        output
+    }
+}
+
+impl Mul<Vector3> for f64 {
+    type Output = Vector3;
+
+    fn mul(self, rhs: Vector3) -> Self::Output {
+        rhs * self
+    }
+}
+
+impl MulAssign<f64> for Vector3 {
     fn mul_assign(&mut self, rhs: f64) {
         for el in &mut self.e {
             *el *= rhs
@@ -69,7 +153,15 @@ impl MulAssign<f64> for Vector {
     }
 }
 
-impl DivAssign<f64> for Vector {
+impl Div<f64> for Vector3 {
+    type Output = Vector3;
+
+    fn div(self, rhs: f64) -> Self::Output {
+        (1. / rhs) * self
+    }
+}
+
+impl DivAssign<f64> for Vector3 {
     fn div_assign(&mut self, rhs: f64) {
         for el in &mut self.e {
             *el /= rhs
@@ -77,7 +169,7 @@ impl DivAssign<f64> for Vector {
     }
 }
 
-impl Index<usize> for Vector {
+impl Index<usize> for Vector3 {
     type Output = f64;
 
     fn index(&self, index: usize) -> &Self::Output {
@@ -85,16 +177,18 @@ impl Index<usize> for Vector {
     }
 }
 
-impl IndexMut<usize> for Vector{
+impl IndexMut<usize> for Vector3 {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         &mut self.e[index]
     }
 }
 
-impl Neg for Vector {
-    type Output = Vector;
+impl Neg for Vector3 {
+    type Output = Vector3;
 
     fn neg(self) -> Self::Output {
-        Vector{e: [-self.e[0], -self.e[1], -self.e[2]]}
+        Vector3 {
+            e: [-self.e[0], -self.e[1], -self.e[2]],
+        }
     }
 }
