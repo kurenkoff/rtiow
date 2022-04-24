@@ -1,9 +1,7 @@
 mod vector;
+mod color;
 
 use std::io::{stderr, Write};
-
-
-const MULT: f64 = 255.999;
 
 fn main() {
     let image_height = 256;
@@ -19,15 +17,12 @@ fn main() {
             expect("error printing");
 
         for i in 0..image_width {
-            let r = i as f64 / (image_width - 1) as f64;
-            let g = j as f64 / (image_height - 1) as f64;
-            let b = 0.25;
+            let color = color::Color::new(
+                i as f64 / (image_width - 1) as f64,
+                j as f64 / (image_height - 1) as f64,
+                0.25);
 
-            let ir = (MULT * r) as i64;
-            let ig = (MULT * g) as i64;
-            let ib = (MULT * b) as i64;
-
-            print!("{} {} {}\n", ir, ig, ib)
+            color::Color::println_color(color)
         }
     }
 

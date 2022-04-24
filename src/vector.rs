@@ -5,7 +5,6 @@ pub struct Vector3 {
     e: [f64; 3],
 }
 
-type Color = Vector3;
 type Point3 = Vector3;
 
 impl Vector3 {
@@ -63,6 +62,16 @@ impl Default for Vector3 {
     fn default() -> Self {
         Vector3 { e: [0., 0., 0.] }
     }
+}
+
+impl Clone for Vector3 {
+    fn clone(&self) -> Self {
+        Vector3::new(self.e[0], self.e[1], self.e[2])
+    }
+}
+
+impl Copy for Vector3 {
+
 }
 
 impl Add for Vector3 {
