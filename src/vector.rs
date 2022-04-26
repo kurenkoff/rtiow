@@ -1,11 +1,9 @@
-use std::io::Write;
+use std::fmt::{Display, Formatter, write};
 use std::ops::{Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, MulAssign, Neg, Sub};
 
 pub struct Vector3 {
     e: [f64; 3],
 }
-
-type Point3 = Vector3;
 
 impl Vector3 {
     pub fn new(x: f64, y: f64, z: f64) -> Vector3 {
@@ -34,7 +32,7 @@ impl Vector3 {
         for el in self.e {
             ls += el * el;
         }
-
+        println!("LS: {}, Vec: {}", ls, self);
         return ls;
     }
 
@@ -52,8 +50,9 @@ impl Vector3 {
         }
     }
 
-    pub fn unit_vector(v: Vector3) -> Vector3{
+    pub fn unit_vector(v: Vector3) -> Vector3 {
         let len = v.length();
+
         v / len
     }
 }
@@ -70,9 +69,7 @@ impl Clone for Vector3 {
     }
 }
 
-impl Copy for Vector3 {
-
-}
+impl Copy for Vector3 {}
 
 impl Add for Vector3 {
     type Output = Vector3;
@@ -199,5 +196,11 @@ impl Neg for Vector3 {
         Vector3 {
             e: [-self.e[0], -self.e[1], -self.e[2]],
         }
+    }
+}
+
+impl Display for Vector3 {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({}, {}, {})", self.e[0], self.e[1], self.e[2])
     }
 }
